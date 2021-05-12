@@ -1,5 +1,5 @@
 {
-  "name": "webpack ts-scss",
+  "name": "webpack-ts-scss",
   "version": "0.1.0",
   "description": "Webpack ts-scss boilerplate",
   "main": "src/index.ts",
