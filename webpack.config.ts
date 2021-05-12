@@ -53,7 +53,7 @@ const config: Configuration = {
   entry: './src/index.ts',
   output: {
     path: resolve(__dirname, 'build'),
-    publicPath: './',
+    publicPath: '/',
     filename: 'bundle.js',
   },
   module: {
