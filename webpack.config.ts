@@ -7,18 +7,18 @@ import { Configuration as WebpackConfiguration } from 'webpack';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { Configuration as WebpackDevServerConfiguration } from 'webpack-dev-server';
 
-const isProduction = process.env.NODE_ENV === 'production';
-const isAnalyze = process.env.analyze;
-
 interface Configuration extends WebpackConfiguration {
   devServer?: WebpackDevServerConfiguration;
 }
+
+const isProduction = process.env.NODE_ENV === 'production';
+const isAnalyze = process.env.analyze;
 
 const nothing = () => {};
 
 const formStylesRule = (useModules = false) => ({
   test: /\.(css|scss|sass)$/,
-  [useModules ? 'exclude' : 'include']: /style\//,
+  [useModules ? 'exclude' : 'include']: /assets\/stylesheets|node_modules/,
   use: [
     isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
     {
@@ -34,14 +34,6 @@ const formStylesRule = (useModules = false) => ({
         }),
       },
     },
-    {
-      loader: 'postcss-loader',
-      options: {
-        postcssOptions: {
-          plugins: [['postcss-preset-env', {}]],
-        },
-      },
-    },
     'sass-loader',
   ],
 });
@@ -49,8 +41,7 @@ const formStylesRule = (useModules = false) => ({
 const config: Configuration = {
   mode: isProduction ? 'production' : 'development',
   devtool: isProduction ? false : 'source-map',
-  target: isProduction ? 'browserslist' : 'web',
-  entry: './src/index.ts',
+  entry: './src/index.tsx',
   output: {
     path: resolve(__dirname, 'build'),
     publicPath: '/',
@@ -107,9 +98,9 @@ const config: Configuration = {
     ],
   },
   resolve: {
-    extensions: ['.js', '.json', '.mjs', '.jsx', '.d.ts', '.ts', '.tsx'],
+    extensions: ['.wasm', '.js', '.json', '.mjs', '.cjs', '.jsx', '.d.ts', '.ts', '.tsx'],
     alias: {
-      '@': resolve(__dirname, 'src/script'),
+      '@': resolve(__dirname, 'src'),
     },
   },
   devServer: {
@@ -120,7 +111,7 @@ const config: Configuration = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/index.html',
+      template: './index.html',
       favicon: './src/static/icons/favicon.ico',
     }),
     new MiniCssExtractPlugin({
@@ -129,9 +120,7 @@ const config: Configuration = {
     }),
     isAnalyze ? new BundleAnalyzerPlugin() : nothing,
     isProduction
-      ? new CopyWebpackPlugin({
-        patterns: [{ from: './src/static', to: '.' }],
-      })
+      ? new CopyWebpackPlugin({ patterns: [{ from: './src/static', to: '.' }] })
       : nothing,
   ],
 };
